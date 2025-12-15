@@ -10,6 +10,7 @@ For each level, for your report:
     propose a remediation.
 
 ## Level00
+
 - Le flag ici se trouve dans un dossier caché -rwsr-x--- 1 flag00 level00 7358 Nov 20  2011 /bin/.../flag00
 - pour le trouver on peut faire la commande find / -type f -perm -u+s -exec ls -l {} \; 2>/dev/null | grep flag qui va rechercher tous les fichiers avec le bit setuit activé et qui va faire la recherche de celui s'appelant flag00
 - Ce programme nous permet de nous connecter en tant que flagOO pourtant nous étions l'utilisateur level00. Un attaquant peut s'en servir pour revenir dans le système en tant que flag00 et donc bénéficier de ses droits.
@@ -58,3 +59,27 @@ La vulnérabilité correspond aux CWE suivantes :
 - Le script critique est utilisable par des utilisateurs non autorisés
 
 ## Level05
+
+### identify the weakness
+
+Clé SSH privée exposée et stockée dans un répertoire de sauvegarde lisible par tous (/home/flag05/.backup/.ssh/id_rsa), permettant à un utilisateur non autorisé de s'authentifier en tant qu'un autre utilisateur (flag05).
+
+### Try to exploit the weakness
+
+Exploiter la clé privée exposée pour se connecter directement en tant que flag05 sans mot de passe.
+
+Étapes :
+
+
+chmod 600 /tmp/flag05_id_rsa
+ssh -i /tmp/flag05_id_rsa flag05@localhost
+
+Une fois connecté :
+
+getflag
+
+### Find CWE linked to the weakness
+
+- CWE-522 – Identifiants insuffisamment protégés
+- CWE-312 – Stockage en texte clair d’informations sensibles
+- CWE-276 – Permissions par défaut incorrectes
