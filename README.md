@@ -11,10 +11,23 @@ For each level, for your report:
 
 ## Level00
 
-- Le flag ici se trouve dans un dossier caché -rwsr-x--- 1 flag00 level00 7358 Nov 20  2011 /bin/.../flag00
-- pour le trouver on peut faire la commande find / -type f -perm -u+s -exec ls -l {} \; 2>/dev/null | grep flag qui va rechercher tous les fichiers avec le bit setuit activé et qui va faire la recherche de celui s'appelant flag00
-- Ce programme nous permet de nous connecter en tant que flagOO pourtant nous étions l'utilisateur level00. Un attaquant peut s'en servir pour revenir dans le système en tant que flag00 et donc bénéficier de ses droits.
-- Ici la solution peut juste être de supprimer ce fichier et de changer les identifiant de connection de l'utilisateur flag00
+### identify the weakness
+
+Le système contient un binaire SUID appartenant à l’utilisateur *flag00*, situé dans un répertoire caché.  
+Ce fichier possède le bit SUID activé, ce qui signifie qu’il s’exécute avec les privilèges de *flag00*, même lorsqu’il est lancé par un autre utilisateur.
+
+### try to understand the impact
+
+Un utilisateur comme *level00* peut exécuter ce programme et se retrouver avec les permissions de *flag00*.  
+Cela représente un risque important : un attaquant pourrait utiliser ce binaire pour obtenir des droits supplémentaires et revenir dans le système avec les privilèges de *flag00*.
+
+### remediation
+
+La mesure corrective la plus simple consiste à supprimer ce binaire SUID non nécessaire et à réinitialiser les identifiants de connexion de l’utilisateur *flag00* afin d’éviter tout abus futur.
+
+### find CWE linked to the weakness
+
+CWE-250 : Execution with Unnecessary Privileges
 
 ## Level01
 
