@@ -45,6 +45,21 @@ Comme le programme est SUID, le code s’exécute avec les privilèges de flag01
 
 CWE-426: Untrusted Search Path
 
+### Identify the Weakness
+
+Le binaire SUID `/home/flag02/level02` appelle `system` avec la commande construite à partir de `getenv("USER")`, qui est contrôlable par l'utilisateur. 
+
+### Try to Exploit the Weakness
+
+Un attaquant peut définir la variable `USER` sur `; getflag`, permettant l'exécution de commandes arbitraires. Cela peut être fait comme suit :
+
+```bash
+USER='; getflag' ./level02
+```
+Find CWE Linked to the Weakness
+
+CWE-426: Untrusted Search Path
+
 ## Level03
 
 ### Identify the weakness
