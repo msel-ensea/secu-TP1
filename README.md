@@ -45,6 +45,8 @@ Comme le programme est SUID, le code s’exécute avec les privilèges de flag01
 
 CWE-426: Untrusted Search Path
 
+## Level02
+
 ### Identify the Weakness
 
 Le binaire SUID `/home/flag02/level02` appelle `system` avec la commande construite à partir de `getenv("USER")`, qui est contrôlable par l'utilisateur. 
@@ -56,7 +58,7 @@ Un attaquant peut définir la variable `USER` sur `; getflag`, permettant l'exé
 ```bash
 USER='; getflag' ./level02
 ```
-Find CWE Linked to the Weakness
+### Find CWE Linked to the Weakness
 
 CWE-426: Untrusted Search Path
 
@@ -86,6 +88,25 @@ La vulnérabilité correspond aux CWE suivantes :
 - CWE-732 – Incorrect Permission Assignment for Critical Resource
 - Le script critique est utilisable par des utilisateurs non autorisés
 
+## Level04
+
+### Identify the Weakness
+
+Le binaire restreint l'accès aux fichiers, interdisant explicitement la lecture du fichier `token` en vérifiant si le nom de fichier contient "token".
+
+### Try to Exploit the Weakness
+
+L'attaquant peut créer un alias pour le fichier `token`, permettant ainsi à l'application de contourner la restriction. En utilisant la commande `su`, il peut changer d'utilisateur et ainsi accéder à ce fichier protégé :
+
+```bash
+ln -s ../../home/flag04/token my_key // on se place dans tmp
+../../home/flag04/flag04 my_key
+su flag04
+```
+
+### Find CWE Linked to the Weakness
+
+CWE-22: Improper Limitation of a Pathname to a Restricted Directory
 ## Level05
 
 ### identify the weakness
