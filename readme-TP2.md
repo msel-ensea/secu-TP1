@@ -18,6 +18,10 @@ Le niveau introduit le concept que la mémoire peut être accessible en dehors d
 ### Try to exploit
 
 Dans ce niveau, un attaquant peut changer le contenu de la variable `changeme` en débordant le tampon `buffer`. En cas réelle ceci permet à l'utilisateur de notre programme de modifier une variable de notre code.
+Par exemple 
+```
+python3 -c 'print("Attack"*15)' | ./stack-zero
+```
 
 ### Remediation
 
