@@ -8,7 +8,7 @@ For each level, for your report:
     try to exploit the weakness
     find CWE linked to the weakness (https://cwe.mitre.org)
     propose a remediation.
-    
+
 ## Stack
 
 ### 3.1 Stack Zero
@@ -55,10 +55,6 @@ CWE-126 : Buffer Over-read
 
 - Remplacer strcpy par une version bornée, par exemple strncpy(locals.buffer, argv[1], sizeof(locals.buffer)-1) + ajout d’un \0 final
 
-Voici le **Markdown complet pour Stack Two**, suivant ton canevas :
-
-***
-
 ### 3.3 Stack Two
 
 #### Identify the Weakness
@@ -76,22 +72,21 @@ export ExploitEducation=$(python3 -c 'print("A"*64 + "\x0a\x09\x0a\x0d")')
 
 #### Find CWE Linked to the Weakness
 
-*   CWE associé : **CWE-121: Stack-based Buffer Overflow**  
+- CWE associé : **CWE-121: Stack-based Buffer Overflow**  
     <https://cwe.mitre.org/data/definitions/121.html>
 
 #### Remediation
 
-*   Remplacer `strcpy` par une version sécurisée, par exemple :
+- Remplacer `strcpy` par une version sécurisée, par exemple :
 
 ```c
 strncpy(locals.buffer, ptr, sizeof(locals.buffer)-1);
 locals.buffer[sizeof(locals.buffer)-1] = '\0';
 ```
 
-*   Ou vérifier la longueur avant la copie.
+- Ou vérifier la longueur avant la copie.
 
-
-### 3.4 Stack Zero
+### 3.4 Stack Two
 
 #### Identify the Weakness
 
