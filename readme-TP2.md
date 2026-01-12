@@ -90,8 +90,18 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 
 #### Identify the Weakness
 
-#### Try to Exploit the Weakness
+- gets + buffer de 64 octets + pointeur de fonction juste après → débordement de pile sur fp.
+
+#### Try to Exploit the Weakness 
+
+- recuperer l'adresse de complete_level avec objdump (+ -x).
+
+- overflow de buffer puis écrasement de fp par 0x000000000040069d (en little-endian) pour appeler complete_level.
 
 #### Find CWE Linked to the Weakness
 
+- CWE-121: Stack-based Buffer Overflow.
+
 #### Remediation
+
+- remplacer gets par fgets(buffer, sizeof(buffer), stdin) et utiliser systématiquement des fonctions sûres pour les entrées utilisateur
