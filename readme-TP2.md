@@ -106,6 +106,46 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 
 - remplacer gets par fgets(buffer, sizeof(buffer), stdin) et utiliser systématiquement des fonctions sûres pour les entrées utilisateur.
 
+
+## 4.1 Format Zero
+
+### Identify the Weakness
+
+Le programme utilise `sprintf(locals.dest, buffer)` où **`buffer` est directement utilisé comme chaîne de format**, sans validation.  
+Cela signifie que l’utilisateur peut injecter des **format strings** : `%n` (Écrit en mémoire le nombre de caractères imprimés), `%x`(récupère un mot de la pile et l'affiche en hexadécimale sur 4 octets) et ainsi lire ou écrire en mémoire.
+
+### Try to Exploit the Weakness
+
+L’objectif est de modifier `changeme` pour qu’il soit différent de 0.  
+Comme `sprintf` écrit dans `locals.dest`, et que `changeme` est juste après, on peut utiliser `%n` pour écrire dans `changeme`.
+
+Exemple d’exploitation :
+```bash
+python3 -c 'print("%x"*4)' | ./format-zero
+```
+Le `%x` force `sprintf` à écrire dans `changeme`, ce qui le rend non nul.
+
+### Find CWE Linked to the Weakness
+
+- **CWE‑134 – Uncontrolled Format String**
+- **CWE‑120 – Classic Buffer Overflow** (indirectement, via `sprintf`)
+
+### Remediation
+- Ne jamais utiliser une chaîne de format contrôlée par l’utilisateur.
+- Remplacer :
+
+```c
+sprintf(locals.dest, buffer);
+```
+
+par :
+
+```c
+snprintf(locals.dest, sizeof(locals.dest), "%s", buffer);
+```
+
+- On a spécifié explicitement la chaîne de format dans les fonctions `printf`‑like.
+
 ### 4.2 Format One
 
 #### Identify the Weakness
