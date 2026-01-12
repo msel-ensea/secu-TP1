@@ -8,7 +8,7 @@ For each level, for your report:
     try to exploit the weakness
     find CWE linked to the weakness (https://cwe.mitre.org)
     propose a remediation.
-## Stack 
+## Stack
 
 ### 3.1 Stack Zero
 ### Identify the Weakness
@@ -30,3 +30,35 @@ La mesure corrective consiste à utiliser des fonctions sécurisées, comme `fge
 ### Find CWE Linked to the Weakness
 
 CWE-126 : Buffer Over-read
+
+### 3.2 Stack One
+
+#### Identify the Weakness
+
+- Utilisation de strcpy sans contrôle de taille sur un buffer local de 64 octets.
+
+- changeme se trouve juste après le buffer dans la pile, donc il est écrasé quand on dépasse 64 octets.
+
+#### Try to Exploit the Weakness
+
+- Envoyer 64 caractères de remplissage + la valeur 0x496c5962 en little-endian.
+
+- Soluce  : ./stack-one $(python -c 'print "A"*64 + "\x62\x59\x6c\x49"')
+
+#### Find CWE Linked to the Weakness
+
+- CWE associé : CWE-121: Stack-based Buffer Overflow.
+
+#### Remediation
+
+- Remplacer strcpy par une version bornée, par exemple strncpy(locals.buffer, argv[1], sizeof(locals.buffer)-1) + ajout d’un \0 final
+
+### 3.4 Stack Zero
+
+#### Identify the Weakness
+
+#### Try to Exploit the Weakness
+
+#### Find CWE Linked to the Weakness
+
+#### Remediation
