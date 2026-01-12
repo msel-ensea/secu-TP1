@@ -181,44 +181,6 @@ Voici le **Markdown complet pour Format One**, suivant ton canevas :
 
 ***
 
-### 4.2 Format One
-
-#### Identify the Weakness
-
-*   Utilisation de `gets()` pour lire l’entrée dans un buffer de 64 octets → vulnérabilité classique (dépassement possible).
-*   Ensuite, `sprintf(locals.dest, buffer)` → **format string vulnérable** : l’utilisateur contrôle le format, ce qui permet d’écrire en mémoire ou d’afficher des données sensibles.
-*   `locals.dest` fait 32 octets → risque de débordement si la chaîne formatée dépasse cette taille.
-
-#### Try to Exploit the Weakness
-
-*   Objectif : modifier `changeme` pour qu’il vaille `0x45764f6c` (ASCII : "lOvE").
-*   Exploitation simple : utiliser `%x` pour remplir et injecter la valeur.
-
-```bash
-python3 -c 'print("%32x" + "lOvE")' | ./format-one
-```
-
-*   `%32x` → remplit avec des hexadécimaux, puis `"lOvE"` déborde dans `changeme`.
-
-#### Find CWE Linked to the Weakness
-
-*   CWE-121: Stack-based Buffer Overflow
-*   CWE-134: Use of Externally-Controlled Format String  
-
-#### Remediation
-
-*   Ne jamais utiliser `sprintf` avec une chaîne contrôlée par l’utilisateur comme format.
-*   Corriger :
-
-```c
-sprintf(locals.dest, "%s", buffer);
-// ou mieux :
-snprintf(locals.dest, sizeof(locals.dest), "%s", buffer);
-```
-Voici le **Markdown pour Heap Zero**, rédigé selon le canevas que tu as donné :
-
-***
-
 ### 5.1 Heap Zero
 
 #### Identify the Weakness
